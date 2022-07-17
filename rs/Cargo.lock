@@ -6505,7 +6505,6 @@ dependencies = [
  "ic-types 0.8.0",
  "ic-utils 0.8.0",
  "ledger-canister",
- "lifeline",
  "maplit",
  "on_wire",
  "prost 0.10.4",

@@ -57,7 +57,7 @@ use ic_utils::byte_slice_fmt::truncate_and_format;
 use ledger::{LedgerCanisterInitPayload, Subaccount, Tokens, DEFAULT_TRANSFER_FEE};
 use ledger_canister as ledger;
 use ledger_canister::AccountIdentifier;
-use lifeline::LIFELINE_CANISTER_WASM;
+// use lifeline::LIFELINE_CANISTER_WASM;
 use on_wire::{bytes, IntoWire};
 use registry_canister::init::{RegistryCanisterInitPayload, RegistryCanisterInitPayloadBuilder};
 
@@ -576,19 +576,19 @@ pub async fn install_lifeline_canister(
     _init_payload: LifelineCanisterInitPayload,
 ) {
     // Use the env var if we have one, otherwise use the embedded binary.
-    Wasm::from_location_specified_by_env_var("lifeline", &[])
-        .unwrap_or_else(|| Wasm::from_bytes(LIFELINE_CANISTER_WASM))
-        .install_with_retries_onto_canister(
-            canister,
-            None,
-            Some(memory_allocation_of(canister.canister_id())),
-        )
-        .await
-        .unwrap();
-    println!(
-        "Installed {} with the lifeline handler",
-        canister.canister_id(),
-    );
+    // Wasm::from_location_specified_by_env_var("lifeline", &[])
+    //     .unwrap_or_else(|| Wasm::from_bytes(LIFELINE_CANISTER_WASM))
+    //     .install_with_retries_onto_canister(
+    //         canister,
+    //         None,
+    //         Some(memory_allocation_of(canister.canister_id())),
+    //     )
+    //     .await
+    //     .unwrap();
+    // println!(
+    //     "Installed {} with the lifeline handler",
+    //     canister.canister_id(),
+    // );
 }
 
 /// Creates and installs the lifeline canister.
