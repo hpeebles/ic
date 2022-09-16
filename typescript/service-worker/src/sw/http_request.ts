@@ -20,6 +20,8 @@ const hostnameCanisterIdMap: Record<string, [string, string]> = {
   'dscvr.one': ['h5aet-waaaa-aaaab-qaamq-cai', 'ic0.app'],
   'dscvr.ic0.app': ['h5aet-waaaa-aaaab-qaamq-cai', 'ic0.app'],
   'personhood.ic0.app': ['g3wsl-eqaaa-aaaan-aaaaa-cai', 'ic0.app'],
+  'oc.app': ['6hsbt-vqaaa-aaaaf-aaafq-cai', 'ic0.app'],
+  'test.oc.app': ['pfs7b-iqaaa-aaaaf-abs7q-cai', 'ic0.app'],
 };
 
 const shouldFetchRootKey: boolean = ['1', 'true'].includes(
