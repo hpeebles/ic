@@ -169,7 +169,6 @@ impl Hypervisor {
                         self.compilation_cache.disk_bytes(),
                     );
                 }
-
                 let adjusted_compilation_cost =
                     compilation_cost_handling.adjusted_compilation_cost(compilation_cost);
                 round_limits.instructions -= as_round_instructions(adjusted_compilation_cost);
