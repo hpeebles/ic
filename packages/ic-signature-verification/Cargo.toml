@@ -19,6 +19,7 @@ ic-verify-bls-signature = { version = "0.6", default-features = false, features 
     "alloc",
 ] }
 ic_principal = "0.1"
+lru = { version = "0.16", optional = true }
 serde = { workspace = true }
 serde_bytes = "0.11"
 serde_cbor = "0.11"
@@ -31,3 +32,9 @@ ic-crypto-internal-types = { path = "../../rs/crypto/internal/crypto_lib/types" 
 ic-crypto-test-utils-canister-sigs = { path = "../../rs/crypto/test_utils/canister_sigs" }
 ic-crypto-test-utils-reproducible-rng = { path = "../../rs/crypto/test_utils/reproducible_rng" }
 ic-types = { path = "../../rs/types/types" }
+
+[features]
+# Records each BLS check that passed, so a delegation (the same in every
+# certificate a subnet mints) and a signature presented again are not
+# checked again. Off by default: a full cache holds about 6 MB of heap.
+signature_cache = ["dep:lru"]

@@ -203,8 +203,25 @@ fn check_bls_signature(certificate: &Certificate, signing_pk_raw: &[u8]) -> Resu
     let mut msg = vec![];
     msg.extend_from_slice(IC_STATE_ROOT_DOMAIN_SEPARATOR);
     msg.extend_from_slice(&root_hash);
-    if verify_bls_signature(sig, &msg, signing_pk_raw).is_err() {
-        return Err("invalid BLS signature".to_string());
+    verify_bls_signature_cached(sig, &msg, signing_pk_raw)
+        .map_err(|_| "invalid BLS signature".to_string())
+}
+
+/// One BLS check, answered from the cache when the same check passed before.
+#[cfg(feature = "signature_cache")]
+fn verify_bls_signature_cached(sig: &[u8], msg: &[u8], pk: &[u8]) -> Result<(), ()> {
+    use crate::signature_cache::{SignatureCache, SignatureCacheEntry};
+
+    let entry = SignatureCacheEntry::new(pk, sig, msg);
+    if SignatureCache::global().contains(&entry) {
+        return Ok(());
     }
+    verify_bls_signature(sig, msg, pk)?;
+    SignatureCache::global().insert(entry);
     Ok(())
+}
+
+#[cfg(not(feature = "signature_cache"))]
+fn verify_bls_signature_cached(sig: &[u8], msg: &[u8], pk: &[u8]) -> Result<(), ()> {
+    verify_bls_signature(sig, msg, pk)
 }
