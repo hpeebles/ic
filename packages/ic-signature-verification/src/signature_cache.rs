@@ -23,14 +23,15 @@ pub(crate) struct SignatureCacheEntry {
 }
 
 impl SignatureCacheEntry {
-    /// Hashes a check's inputs. The key and signature are fixed-length for
-    /// BLS, and the message comes last, so plain concatenation is
-    /// unambiguous.
+    /// Hashes a check's inputs, each length-prefixed: the signature's length
+    /// is the presenter's to choose, so unprefixed, bytes moved from one
+    /// input to the next would give the same entry.
     pub(crate) fn new(pk: &[u8], sig: &[u8], msg: &[u8]) -> Self {
         let mut sha256 = Sha256::new();
-        sha256.update(pk);
-        sha256.update(sig);
-        sha256.update(msg);
+        for input in [pk, sig, msg] {
+            sha256.update((input.len() as u64).to_be_bytes());
+            sha256.update(input);
+        }
         Self {
             hash: sha256.finalize().into(),
         }
@@ -113,6 +114,14 @@ mod tests {
         assert!(cache.contains(&entry(1)));
         assert!(!cache.contains(&entry(2)));
         assert!(cache.contains(&entry(3)));
+    }
+
+    #[test]
+    fn moving_bytes_between_inputs_changes_the_entry() {
+        assert_ne!(
+            SignatureCacheEntry::new(&[1; 96], &[2; 48], &[3; 32]),
+            SignatureCacheEntry::new(&[1; 96], &[2; 47], &[[2].as_slice(), &[3; 32]].concat()),
+        );
     }
 
     #[test]

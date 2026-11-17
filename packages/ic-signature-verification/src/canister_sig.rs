@@ -254,6 +254,22 @@ mod tests {
     use super::*;
     use ic_certification::{empty, fork, labeled, leaf, pruned};
 
+    /// With the feature on, a BLS check is answered from the cache: inputs
+    /// that verify nothing pass once recorded, and only then. Fails if the
+    /// cfg gates compile the uncached path instead.
+    #[cfg(feature = "signature_cache")]
+    #[test]
+    fn a_recorded_check_is_answered_from_the_cache() {
+        use crate::signature_cache::{SignatureCache, SignatureCacheEntry};
+
+        let (pk, sig, msg) = ([7u8; 96], [8u8; 48], b"never signed".as_slice());
+        assert!(verify_bls_signature_cached(&sig, msg, &pk).is_err());
+
+        SignatureCache::global().insert(SignatureCacheEntry::new(&pk, &sig, msg));
+        assert!(verify_bls_signature_cached(&sig, msg, &pk).is_ok());
+        assert!(verify_bls_signature_cached(&sig, b"another message", &pk).is_err());
+    }
+
     #[test]
     fn find_leaf_empty_tree_returns_none() {
         let tree = empty();
